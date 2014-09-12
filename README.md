@@ -2,7 +2,7 @@
 -------------
 
 
-##This repository includes applications developed at Codeup in the Carlsbad cohort.
+####This repository includes applications developed at Codeup in the Carlsbad cohort.
 
 
 
