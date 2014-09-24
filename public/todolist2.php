@@ -29,21 +29,33 @@
             fclose($handle);
         };
 
+
         //open file
         $items = openfile();
 
             //check for key 'additem' in POST request
-            if(isset($_POST['additem'])){
-                //add item from POST to array $items
-                $items[]= $_POST['additem'];
-                //save array of items to file
-                save_to_file($items);
+            //throw exception errors 
+            if(isset($_POST['additem'])) {
+                try{
+                    if(strlen($_POST['additem'])==0) {
+                        throw new Exception('That item is too small');
+                    }elseif(strlen($_POST['additem']) > 240) {
+                        throw new Exception('That item was TOO BIG!');
+                    }
+                    //add item from POST to array $items
+                    $items[]= $_POST['additem'];
+                    //save array of items to file
+                    save_to_file($items);
+                } catch(Exception $e) {
+                    $errorMessage= $e->getMessage();
+                }
             }
+                
 
             //check for key 'remove' in GET request
-            if(isset($_GET['remove'])){
+            if(isset($_POST['remove'])){
                 // Define variable $keyToRemove according to value
-                $keyToRemove = $_GET['remove'];
+                $keyToRemove = $_POST['remove'];
                 // Remove item from array according to key specified
                 unset($items[$keyToRemove]);
                 // Numerically reindex values in array after removing item
@@ -71,6 +83,7 @@
                     save_to_file($items); 
                 }
             }
+
 ?>
 
     <html>
