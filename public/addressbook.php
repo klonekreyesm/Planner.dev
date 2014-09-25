@@ -4,7 +4,7 @@
 require_once("address_data_store.php");
 
 
-$states_arr = array('AL'=>"Alabama",'AK'=>"Alaska",'AZ'=>"Arizona",'AR'=>"Arkansas",'CA'=>"California",'CO'=>"Colorado",'CT'=>"Connecticut",'DE'=>"Delaware",'DC'=>"District Of Columbia",'FL'=>"Florida",'GA'=>"Georgia",'HI'=>"Hawaii",'ID'=>"Idaho",'IL'=>"Illinois", 'IN'=>"Indiana", 'IA'=>"Iowa",  'KS'=>"Kansas",'KY'=>"Kentucky",'LA'=>"Louisiana",'ME'=>"Maine",'MD'=>"Maryland", 'MA'=>"Massachusetts",'MI'=>"Michigan",'MN'=>"Minnesota",'MS'=>"Mississippi",'MO'=>"Missouri",'MT'=>"Montana",'NE'=>"Nebraska",'NV'=>"Nevada",'NH'=>"New Hampshire",'NJ'=>"New Jersey",'NM'=>"New Mexico",'NY'=>"New York",'NC'=>"North Carolina",'ND'=>"North Dakota",'OH'=>"Ohio",'OK'=>"Oklahoma", 'OR'=>"Oregon",'PA'=>"Pennsylvania",'RI'=>"Rhode Island",'SC'=>"South Carolina",'SD'=>"South Dakota",'TN'=>"Tennessee",'TX'=>"Texas",'UT'=>"Utah",'VT'=>"Vermont",'VA'=>"Virginia",'WA'=>"Washington",'WV'=>"West Virginia",'WI'=>"Wisconsin",'WY'=>"Wyoming");
+//$states_arr = array('AL'=>"Alabama",'AK'=>"Alaska",'AZ'=>"Arizona",'AR'=>"Arkansas",'CA'=>"California",'CO'=>"Colorado",'CT'=>"Connecticut",'DE'=>"Delaware",'DC'=>"District Of Columbia",'FL'=>"Florida",'GA'=>"Georgia",'HI'=>"Hawaii",'ID'=>"Idaho",'IL'=>"Illinois", 'IN'=>"Indiana", 'IA'=>"Iowa",  'KS'=>"Kansas",'KY'=>"Kentucky",'LA'=>"Louisiana",'ME'=>"Maine",'MD'=>"Maryland", 'MA'=>"Massachusetts",'MI'=>"Michigan",'MN'=>"Minnesota",'MS'=>"Mississippi",'MO'=>"Missouri",'MT'=>"Montana",'NE'=>"Nebraska",'NV'=>"Nevada",'NH'=>"New Hampshire",'NJ'=>"New Jersey",'NM'=>"New Mexico",'NY'=>"New York",'NC'=>"North Carolina",'ND'=>"North Dakota",'OH'=>"Ohio",'OK'=>"Oklahoma", 'OR'=>"Oregon",'PA'=>"Pennsylvania",'RI'=>"Rhode Island",'SC'=>"South Carolina",'SD'=>"South Dakota",'TN'=>"Tennessee",'TX'=>"Texas",'UT'=>"Utah",'VT'=>"Vermont",'VA'=>"Virginia",'WA'=>"Washington",'WV'=>"West Virginia",'WI'=>"Wisconsin",'WY'=>"Wyoming");
 
 
 function new_array($items) {
@@ -40,7 +40,7 @@ if (!empty($_POST['name']) && !empty($_POST['phone']) && !empty($_POST['address'
             $book->write($book_array);
         }
     } catch (Exception $e) {
-        echo "ERROR: Failed, try again.";
+       $error = $e->getMessage(); //echo "ERROR: Must be shorter than 125 characters.";
     }
 } elseif (isset($_POST['submit'])) {
     $error = "ERROR: One or more fields were empty.";
@@ -94,6 +94,8 @@ if (count($_FILES) > 0 && $_FILES['file1']['error'] == 0) {
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
     <title>Address Book</title>
 </head>
+
+
 <body style = "padding: 75px">
   <h1><span class="glyphicon glyphicon-book"></span> Address Book</h1>
   <div class="panel panel-default">
@@ -109,24 +111,21 @@ if (count($_FILES) > 0 && $_FILES['file1']['error'] == 0) {
             <th>Zip</th>
             <th>Delete</th>
          </tr>
-                <? foreach($book_array as $key => $address): ?>
-                    <tr>
-                        <? foreach($address as $data): ?>
-                            <td><?= htmlspecialchars(strip_tags("{$data}")) ?></td>
-                        <? endforeach; ?>
-                        <td><?="<a id='remove' name='remove' href='addressbook.php?key=$key'> <button type='button' class='btn btn-default btn-sm'>
-                    <span class='glyphicon glyphicon-trash'></span></button></a>" ?></td>
-                    </tr>
-
+             <? foreach($book_array as $key => $address): ?>
+                <tr>
+                    <? foreach($address as $data): ?>
+                    <td><?= htmlspecialchars(strip_tags("{$data}")) ?></td>
+                    <? endforeach; ?>
+                    <td><?="<a id='remove' name='remove' href='addressbook.php?key=$key'> <button type='button' class='btn btn-default btn-sm'>
+                            <span class='glyphicon glyphicon-trash'></span></button></a>" ?></td>
+                </tr>
                 <? endforeach; ?>
-            </table>
-        </div>
+    </table>        
     </div>
+
     <h4> Add a new contact:</h4>
-    <div class="container">
-        <div class="col-xs-2" id="mainPage">
-            <form method="POST">
-                <p>
+            <form class = "form-horizontal" method="POST">
+                <div class = "form-group">
                     <label for="name">Name</label>
                     <input id="name" name="name" type="text" placeholder = "John Doe" value="<?if(isset($_POST['name']) && isset($error)){echo htmlspecialchars($_POST['name']);}?>">
 
@@ -144,23 +143,21 @@ if (count($_FILES) > 0 && $_FILES['file1']['error'] == 0) {
 
                     <label for="zip">Zip Code</label>
                     <input id="zip" name="zip" type="text" value="<?if(isset($_POST['zip']) && isset($error)){echo htmlspecialchars($_POST['zip']);}?>">
-                </p>
+                </div>
                 <p id="button">
                     <button class="btn btn-success btn-md" type="submit" id="submit" name="submit">Submit</button>
-                </p>
-                
+                </p> 
+                <!--error message -->
                 <? if(isset($error)): ?>
                     <p><div class="alert alert-danger" role="alert">
                         <?= "{$error}" ?>
                     </p></div>
                 <? endif; ?>
+                <!--end of error message -->
             </form>
         </div>
-    </div>
-
-
-    <div class="col-xs-4 col-xs-offset-7" id="mainpage">
-        <form method="POST" enctype="multipart/form-data" action="address-book.php">
+  
+        <form method="POST" enctype="multipart/form-data" action="addressbook.php">
             <p>
                 <label for="file1"><h3>Upload a Saved Address Book: </h3></label>
                 <input type="file" id="file1" name="file1">
@@ -168,12 +165,12 @@ if (count($_FILES) > 0 && $_FILES['file1']['error'] == 0) {
             <p>
                 <input class="btn btn-success btn-md" type="submit" value="Upload">
                 <p class="help-block">Only .csv file with maximum size of 1 MB is allowed.</p> 
-                <form method="POST">
-               <!-- <label><input type="checkbox" name="overwrite" id="overwrite" value="yes">Overwrite Current List</label> -->
-                </form>
+                <!--<form method="POST">
+                <label><input type="checkbox" name="overwrite" id="overwrite" value="yes">Overwrite Current List</label> 
+                </form>-->
             </p>
         </form>
-    </div>
+   
 
 
 </body>
